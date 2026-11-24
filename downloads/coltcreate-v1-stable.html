@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColtCreate v1.0.0 — ColtApps Creative & Productivity Suite | Muir Middle School (HVS)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --muir-navy: #0f294a;
+      --muir-navy-deep: #091a30;
+      --muir-gold: #eab308;
+      --muir-gold-hover: #ca8a04;
+      --bg-base: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-elevated: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-1px: #cbd5e1;
+    }
+
+    html.dark {
+      --bg-base: #060d17;
+      --bg-surface: #0b1626;
+      --bg-elevated: #11223a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-1px: #1e3a5f;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+    }
+
+    .cc-surface {
+      background-color: var(--bg-surface);
+      border-color: var(--border-1px);
+    }
+
+    .cc-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-1px);
+    }
+
+    .cc-border {
+      border-color: var(--border-1px);
+    }
+
+    .cc-muted {
+      color: var(--text-muted);
+    }
+
+    /* Rich Document Editor styling */
+    #writer-canvas:focus {
+      outline: none;
+    }
+    #writer-canvas h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    #writer-canvas h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 0.75rem;
+      margin-bottom: 0.35rem;
+    }
+    #writer-canvas p {
+      margin-bottom: 0.6rem;
+      line-height: 1.65;
+    }
+    #writer-canvas ul {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      margin-bottom: 0.6rem;
+    }
+    #writer-canvas ol {
+      list-style-type: decimal;
+      padding-left: 1.5rem;
+      margin-bottom: 0.6rem;
+    }
+    #writer-canvas table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0;
+    }
+    #writer-canvas td, #writer-canvas th {
+      border: 1px solid #94a3b8;
+      padding: 0.45rem 0.6rem;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.3); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.5); }
+
+    @media print {
+      body * { visibility: hidden; }
+      #writer-canvas, #writer-canvas * { visibility: visible; }
+      #writer-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 1in !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col font-sans select-none">
+
+  <!-- TOP WORKSPACE HEADER -->
+  <header class="bg-[#0f294a] text-white border-b border-amber-500/30 px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-30 flex-shrink-0">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-[#eab308] text-[#091a30] font-black flex items-center justify-center shadow">
+        C3
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-sm tracking-tight">ColtCreate</span>
+          <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded bg-[#eab308] text-[#091a30]">v1.0.0</span>
+          <span class="hidden md:inline text-xs text-amber-300 font-medium">
+            ColtApps &bull; Built for Muir Middle School (HVS) by Henry Green
+          </span>
+        </div>
+        <div id="header-doc-status" class="text-[11px] font-mono text-sky-200/80">
+          ColtHub Cloud Drive &bull; All changes saved locally
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="btn-quick-save" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition">
+        <span>💾</span>
+        <span class="hidden sm:inline">Save Now</span>
+      </button>
+      <button id="btn-dark-toggle" class="px-2.5 py-1.5 rounded-lg bg-[#eab308] hover:bg-amber-400 text-[#091a30] text-xs font-extrabold flex items-center gap-1.5 transition">
+        <span id="dark-icon">🌙</span>
+        <span id="dark-label">Dark Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE BODY -->
+  <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+
+    <!-- LEFT APP LAUNCHER RAIL (Responsive: Horizontal bar on mobile, Vertical rail on desktop) -->
+    <nav id="app-rail" class="bg-[#091a30] text-slate-200 border-b md:border-b-0 md:border-r border-[#1e3a5f] flex md:flex-col items-center justify-between md:justify-start gap-1 p-1.5 md:w-20 flex-shrink-0 overflow-x-auto z-20">
+      <!-- App buttons populated via JS -->
+    </nav>
+
+    <!-- ACTIVE APP WORKSPACE VIEWPORT -->
+    <main id="app-viewport" class="flex-1 overflow-hidden flex flex-col relative">
+      <!-- App views rendered dynamically -->
+    </main>
+
+  </div>
+
+  <!-- FULLSCREEN PRESENTATION OVERLAY (FOR COLTSLIDES) -->
+  <div id="present-overlay" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
+    <div id="present-stage" class="flex-1 flex items-center justify-center p-6 sm:p-12"></div>
+    <div class="bg-zinc-950/90 border-t border-white/10 px-4 py-2.5 flex items-center justify-between text-white font-mono text-xs">
+      <div id="present-counter">Slide 1 / 1</div>
+      <div class="flex items-center gap-2">
+        <button id="present-prev" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-bold">&larr; Prev</button>
+        <button id="present-next" class="px-3 py-1.5 rounded-lg bg-[#eab308] text-[#091a30] font-extrabold">Next &rarr;</button>
+        <button id="present-exit" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 font-bold ml-2">Exit (Esc)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="cc-toast" class="hidden fixed bottom-4 right-4 z-50 bg-[#0f294a] text-white border border-[#eab308] px-4 py-2 rounded-xl shadow-2xl text-xs font-mono font-bold">
+    Saved!
+  </div>
+
+  <script>
+    /**
+     * ColtCreate v1.0.0 — ColtApps Creative & Productivity Office Suite
+     * Built by Henry Green for Muir Middle School (HVS)
+     * Storage Namespace: coltcreate_v1_
+     */
+    (function () {
+      const STORAGE_KEY = 'coltcreate_v1_workspace';
+
+      // --- App Definitions (Microsoft 365 Equivalents) ---
+      const APPS = [
+        { id: 'hub',     name: 'ColtHub',    sub: 'Home & Drive',   icon: '🏠', badge: 'bg-amber-400 text-slate-950' },
+        { id: 'writer',  name: 'ColtWriter', sub: 'Word Docs',      icon: '📄', badge: 'bg-sky-500 text-white' },
+        { id: 'slides',  name: 'ColtSlides', sub: 'PowerPoint',     icon: '📊', badge: 'bg-orange-500 text-white' },
+        { id: 'sheets',  name: 'ColtSheets', sub: 'Excel Grid',     icon: '📈', badge: 'bg-emerald-500 text-white' },
+        { id: 'studio',  name: 'ColtStudio', sub: 'Clipchamp Video',icon: '🎬', badge: 'bg-purple-500 text-white' },
+        { id: 'paint',   name: 'ColtPaint',  sub: 'MS Paint Art',   icon: '🎨', badge: 'bg-pink-500 text-white' },
+        { id: 'forms',   name: 'ColtForms',  sub: 'Forms & Notes',  icon: '📋', badge: 'bg-teal-500 text-white' }
+      ];
+
+      // --- HVS Sample Templates ---
+      const TEMPLATES = [
+        {
+          id: 'tpl-essay',
+          app: 'writer',
+          title: '8th Grade English Essay',
+          desc: 'MLA-style header, thesis block, and structured body paragraphs.',
+          icon: '📄'
+        },
+        {
+          id: 'tpl-science',
+          app: 'slides',
+          title: 'Muir Science Fair Slides',
+          desc: '4-slide Muir Navy & Gold deck covering Hypothesis, Method, Data & Conclusion.',
+          icon: '📊'
+        },
+        {
+          id: 'tpl-grades',
+          app: 'sheets',
+          title: 'Quarter Grade Tracker',
+          desc: 'Live =SUM() and =AVERAGE() formulas tracking HVS class scores.',
+          icon: '📈'
+        },
+        {
+          id: 'tpl-video',
+          app: 'studio',
+          title: 'Morning Announcements Video',
+          desc: 'Multi-scene kinetic typography intro with ColtSpirit synth beat.',
+          icon: '🎬'
+        },
+        {
+          id: 'tpl-poster',
+          app: 'paint',
+          title: 'Colts Spirit Poster Canvas',
+          desc: 'Pre-stenciled Muir Colts Navy & Gold banner ready for custom art.',
+          icon: '🎨'
+        },
+        {
+          id: 'tpl-club',
+          app: 'forms',
+          title: 'Club Sign-Up & Sticky Notes',
+          desc: 'Interactive HVS Coding & Robotics Club poll plus study sticky notes.',
+          icon: '📋'
+        }
+      ];
+
+      // --- Default State ---
+      const defaultState = {
+        darkMode: false,
+        activeApp: 'hub',
+        recentFiles: [
+          { id: 'f1', name: 'Muir_Science_Fair_2026.slides', app: 'slides', updated: 'Today' },
+          { id: 'f2', name: 'ELA_Argument_Essay.doc', app: 'writer', updated: 'Today' },
+          { id: 'f3', name: 'Q2_Grade_Calculator.sheet', app: 'sheets', updated: 'Today' },
+          { id: 'f4', name: 'Morning_Announcements.vid', app: 'studio', updated: 'Today' }
+        ],
+        writer: {
+          title: 'ELA_Argument_Essay.doc',
+          zoom: 100,
+          focusMode: false,
+          html: `<h1>The Impact of Student-Built Software at Muir Middle School</h1>
+<p><strong>Author:</strong> Henry Green &bull; <strong>School:</strong> Muir Middle School (HVS) &bull; <strong>Suite:</strong> ColtCreate v1.0.0</p>
+<h2>Introduction</h2>
+<p>Accessible, fast web applications empower middle school students to write, analyze data, design presentations, and edit video right from their school Chromebooks without heavy installations.</p>
+<h2>Key Benefits of ColtApps</h2>
+<ul>
+  <li>Instant startup on low-RAM devices with offline localStorage persistence.</li>
+  <li>Unified creative tools covering documents, spreadsheets, slides, art, and video.</li>
+  <li>Built specifically for the Muir Colts learning community.</li>
+</ul>`
+        },
+        slides: {
+          title: 'Muir_Science_Fair_2026.slides',
+          theme: 'muir', // 'muir' | 'cyber' | 'academic' | 'emerald'
+          activeIndex: 0,
+          items: [
+            {
+              layout: 'title',
+              title: 'Muir Middle School Science Fair',
+              subtitle: 'Investigating Renewable Solar Energy Efficiency • Presented by Henry Green',
+              colRight: '',
+              callout: 'HVS STEM Showcase 2026'
+            },
+            {
+              layout: 'content',
+              title: 'Hypothesis & Research Question',
+              subtitle: 'If a solar panel is angled at 42 degrees matching Michigan latitude, then voltage output will increase by at least 18% compared to a flat horizontal panel.',
+              colRight: '',
+              callout: 'Key Variable: Tilt Angle (0° vs 42°)'
+            },
+            {
+              layout: 'twocol',
+              title: 'Experimental Method vs. Control',
+              subtitle: 'Control Group: Flat 0° monocrystalline cell tested under 500W lamp for 15 minutes.',
+              colRight: 'Test Group: 42° angled cell with identical distance, temperature, and digital multimeter logging.',
+              callout: '3 Trials Completed'
+            },
+            {
+              layout: 'quote',
+              title: '+22.4% Peak Wattage Gain',
+              subtitle: 'Conclusion: Optimal solar tilt significantly boosts energy capture for school rooftop arrays.',
+              colRight: '',
+              callout: 'Go Muir Colts!'
+            }
+          ]
+        },
+        sheets: {
+          title: 'Q2_Grade_Calculator.sheet',
+          selectedCell: 'A1',
+          chartCol: 'C',
+          cells: {
+            A1: { raw: 'Subject', bold: true, fmt: 'text' },
+            B1: { raw: 'Assignments', bold: true, fmt: 'text' },
+            C1: { raw: 'Score', bold: true, fmt: 'text' },
+            D1: { raw: 'Bonus', bold: true, fmt: 'text' },
+            E1: { raw: 'Final', bold: true, fmt: 'text' },
+            A2: { raw: 'Algebra I', bold: false, fmt: 'text' },
+            B2: { raw: '12', bold: false, fmt: 'num' },
+            C2: { raw: '92', bold: false, fmt: 'num' },
+            D2: { raw: '3', bold: false, fmt: 'num' },
+            E2: { raw: '=C2+D2', bold: true, fmt: 'num' },
+            A3: { raw: 'Physical Science', bold: false, fmt: 'text' },
+            B3: { raw: '10', bold: false, fmt: 'num' },
+            C3: { raw: '88', bold: false, fmt: 'num' },
+            D3: { raw: '4', bold: false, fmt: 'num' },
+            E3: { raw: '=C3+D3', bold: true, fmt: 'num' },
+            A4: { raw: 'US History', bold: false, fmt: 'text' },
+            B4: { raw: '9', bold: false, fmt: 'num' },
+            C4: { raw: '95', bold: false, fmt: 'num' },
+            D4: { raw: '2', bold: false, fmt: 'num' },
+            E4: { raw: '=C4+D4', bold: true, fmt: 'num' },
+            A5: { raw: 'Computer Science', bold: false, fmt: 'text' },
+            B5: { raw: '14', bold: false, fmt: 'num' },
+            C5: { raw: '98', bold: false, fmt: 'num' },
+            D5: { raw: '2', bold: false, fmt: 'num' },
+            E5: { raw: '=C5+D5', bold: true, fmt: 'num' },
+            A7: { raw: 'Class Average', bold: true, fmt: 'text' },
+            C7: { raw: '=AVERAGE(C2:C5)', bold: true, fmt: 'num' },
+            E7: { raw: '=AVERAGE(E2:E5)', bold: true, fmt: 'num' },
+            A8: { raw: 'Total Points', bold: true, fmt: 'text' },
+            E8: { raw: '=SUM(E2:E5)', bold: true, fmt: 'num' }
+          }
+        },
+        studio: {
+          title: 'Morning_Announcements.vid',
+          activeClip: 0,
+          playhead: 0, // 0 to 100
+          playing: false,
+          audioEnabled: true,
+          clips: [
+            { id: 'c1', label: 'Intro Bumper', bg: '#0f294a', accent: '#eab308', headline: 'MUIR MORNING NEWS', sub: 'Huron Valley Schools • Live Broadcast', sticker: '🐎', duration: 3 },
+            { id: 'c2', label: 'Sports Update', bg: '#1e1b4b', accent: '#38bdf8', headline: 'COLTS BASKETBALL WIN!', sub: '48 - 36 Victory Over Rival Middle School', sticker: '🏀', duration: 3 },
+            { id: 'c3', label: 'Tech Club', bg: '#064e3b', accent: '#34d399', headline: 'COLTAPPS CODING CLUB', sub: 'Meets Thursday in Room 204 after school', sticker: '💻', duration: 3 }
+          ]
+        },
+        paint: {
+          title: 'Colts_Spirit_Artwork.png',
+          tool: 'brush', // 'brush' | 'eraser' | 'line' | 'rect' | 'circle' | 'text' | 'fill'
+          color: '#eab308',
+          size: 6,
+          dataUrl: null
+        },
+        forms: {
+          subTab: 'forms', // 'forms' | 'notes'
+          formTitle: 'Muir Middle School Coding & Robotics Club Sign-Up',
+          questions: [
+            { id: 'q1', type: 'mc', prompt: 'Which grade are you in at Muir Middle School?', options: ['6th Grade', '7th Grade', '8th Grade'] },
+            { id: 'q2', type: 'mc', prompt: 'Which ColtApps project are you most excited to try?', options: ['ColtCreate Office', 'ColtBrowser DEV', 'ColtEmulate Hypervisor'] },
+            { id: 'q3', type: 'rating', prompt: 'How confident are you with HTML/JS coding? (1-5)', options: ['1', '2', '3', '4', '5'] }
+          ],
+          responses: [
+            { q1: '8th Grade', q2: 'ColtCreate Office', q3: '5' },
+            { q1: '7th Grade', q2: 'ColtEmulate Hypervisor', q3: '4' },
+            { q1: '8th Grade', q2: 'ColtBrowser DEV', q3: '5' }
+          ],
+          stickies: [
+            { id: 's1', color: 'bg-amber-200 text-slate-900', title: 'Science Lab Due', body: 'Finish solar angle data table in ColtSheets before Friday!' },
+            { id: 's2', color: 'bg-sky-200 text-slate-900', title: 'ELA Essay Checklist', body: 'Check thesis statement and export PDF from ColtWriter.' },
+            { id: 's3', color: 'bg-emerald-200 text-slate-900', title: 'ColtApps Release', body: 'ColtCreate v1.0.0 ready for HVS Google Sites!' }
+          ]
+        }
+      };
+
+      let state = JSON.parse(JSON.stringify(defaultState));
+
+      // --- Storage Helpers ---
+      function loadWorkspace() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          state = {
+            ...state,
+            ...parsed,
+            writer: { ...state.writer, ...(parsed.writer || {}) },
+            slides: { ...state.slides, ...(parsed.slides || {}) },
+            sheets: { ...state.sheets, ...(parsed.sheets || {}) },
+            studio: { ...state.studio, ...(parsed.studio || {}), playing: false },
+            paint: { ...state.paint, ...(parsed.paint || {}) },
+            forms: { ...state.forms, ...(parsed.forms || {}) }
+          };
+        } catch (e) {}
+      }
+
+      function saveWorkspace(showNotification = false) {
+        try {
+          const toSave = {
+            darkMode: state.darkMode,
+            activeApp: state.activeApp,
+            recentFiles: state.recentFiles,
+            writer: state.writer,
+            slides: state.slides,
+            sheets: state.sheets,
+            studio: { ...state.studio, playing: false },
+            paint: state.paint,
+            forms: state.forms
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+          const st = document.getElementById('header-doc-status');
+          if (st) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            st.textContent = `ColtHub Cloud Drive • Saved at ${time}`;
+          }
+          if (showNotification) toast('Workspace saved to local storage');
+        } catch (e) {}
+      }
+
+      let toastTimer = null;
+      function toast(msg) {
+        const el = document.getElementById('cc-toast');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.add('hidden'), 2200);
+      }
+
+      function esc(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function downloadBlob(content, filename, mime = 'text/plain') {
+        const blob = new Blob([content], { type: mime });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        toast(`Downloaded ${filename}`);
+      }
+
+      function applyTheme() {
+        document.documentElement.classList.toggle('dark', !!state.darkMode);
+        document.getElementById('dark-icon').textContent = state.darkMode ? '☀️' : '🌙';
+        document.getElementById('dark-label').textContent = state.darkMode ? 'Light Mode' : 'Dark Mode';
+      }
+
+      // --- Render Left App Launcher Rail ---
+      function renderRail() {
+        const rail = document.getElementById('app-rail');
+        rail.innerHTML = APPS.map(app => {
+          const active = state.activeApp === app.id;
+          return `
+            <button
+              data-switch-app="${app.id}"
+              class="flex flex-col items-center justify-center p-2 rounded-xl transition flex-shrink-0 w-16 md:w-full ${
+                active
+                  ? 'bg-[#eab308] text-[#091a30] font-extrabold shadow-md'
+                  : 'text-slate-300 hover:bg-white/10'
+              }"
+            >
+              <span class="text-lg leading-none mb-1">${app.icon}</span>
+              <span class="text-[10px] font-bold tracking-tight leading-tight">${app.name}</span>
+            </button>
+          `;
+        }).join('');
+
+        rail.querySelectorAll('[data-switch-app]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            stopStudioPlayback();
+            state.activeApp = btn.getAttribute('data-switch-app');
+            saveWorkspace(false);
+            renderRail();
+            renderActiveApp();
+          });
+        });
+      }
+
+      // =========================================================================
+      // 1. COLTHUB (HOME, TEMPLATES & CLOUD DRIVE)
+      // =========================================================================
+      function renderHub() {
+        return `
+          <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+            <!-- Hero Banner -->
+            <div class="rounded-2xl bg-gradient-to-r from-[#0f294a] via-[#163a68] to-[#0f294a] text-white p-5 sm:p-6 border border-amber-400/30 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="space-y-1.5">
+                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#eab308] text-[#091a30] font-mono text-[11px] font-extrabold">
+                  COLTAPPS PRODUCTIVITY &amp; CREATIVE SUITE
+                </div>
+                <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">Welcome to ColtCreate, Muir Student!</h1>
+                <p class="text-xs sm:text-sm text-sky-100/90 max-w-2xl">
+                  Create documents, presentations, spreadsheets, videos, digital art, and classroom forms—100% browser-based and built for Muir Middle School (HVS) by Henry Green.
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-2 flex-shrink-0">
+                <button id="hub-backup-btn" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-bold border border-white/20">
+                  Export Backup (.json)
+                </button>
+                <label class="px-3.5 py-2 rounded-xl bg-[#eab308] hover:bg-amber-400 text-[#091a30] text-xs font-extrabold cursor-pointer">
+                  Restore Backup
+                  <input id="hub-restore-input" type="file" accept=".json" class="hidden" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Quick Launch Apps Grid -->
+            <div>
+              <h2 class="text-xs font-mono font-bold uppercase tracking-wider cc-muted mb-3">Launch a ColtCreate Application</h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                ${APPS.filter(a => a.id !== 'hub').map(app => `
+                  <button data-hub-open="${app.id}" class="cc-surface border rounded-2xl p-4 text-left hover:border-amber-400 hover:shadow-md transition flex flex-col justify-between gap-3">
+                    <div class="w-10 h-10 rounded-xl ${app.badge} flex items-center justify-center text-xl shadow-sm">
+                      ${app.icon}
+                    </div>
+                    <div>
+                      <div class="font-extrabold text-sm">${app.name}</div>
+                      <div class="text-[11px] cc-muted">${app.sub}</div>
+                    </div>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- HVS Starter Templates -->
+            <div>
+              <h2 class="text-xs font-mono font-bold uppercase tracking-wider cc-muted mb-3">Muir Middle School (HVS) Starter Templates</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                ${TEMPLATES.map(tpl => `
+                  <div class="cc-surface border rounded-2xl p-4 flex flex-col justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                      <span class="text-2xl">${tpl.icon}</span>
+                      <div>
+                        <div class="font-bold text-sm">${esc(tpl.title)}</div>
+                        <p class="text-xs cc-muted mt-0.5 leading-relaxed">${esc(tpl.desc)}</p>
+                      </div>
+                    </div>
+                    <button data-load-tpl="${tpl.id}" class="w-full py-1.5 rounded-xl bg-[#0f294a] hover:bg-[#183e6e] text-amber-300 text-xs font-bold transition">
+                      Open Template in ${APPS.find(a => a.id === tpl.app)?.name} &rarr;
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Active Cloud Drive Files -->
+            <div class="cc-surface border rounded-2xl p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xs font-mono font-bold uppercase tracking-wider cc-muted">Active Workspace Files (ColtHub Drive)</h2>
+                <button id="hub-reset-demo" class="text-[11px] font-mono text-rose-500 hover:underline">Reset Demo Files</button>
+              </div>
+              <div class="divide-y cc-border">
+                ${[
+                  { app: 'writer', name: state.writer.title, meta: 'ColtWriter Document' },
+                  { app: 'slides', name: state.slides.title, meta: `ColtSlides Deck (${state.slides.items.length} slides)` },
+                  { app: 'sheets', name: state.sheets.title, meta: 'ColtSheets Workbook (Formulas Active)' },
+                  { app: 'studio', name: state.studio.title, meta: `ColtStudio Timeline (${state.studio.clips.length} clips)` },
+                  { app: 'paint',  name: state.paint.title,  meta: 'ColtPaint Canvas' },
+                  { app: 'forms',  name: state.forms.formTitle, meta: `ColtForms (${state.forms.responses.length} responses)` }
+                ].map(item => `
+                  <div class="py-2.5 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 overflow-hidden">
+                      <span class="text-lg">${APPS.find(a => a.id === item.app)?.icon}</span>
+                      <div class="overflow-hidden">
+                        <div class="text-xs font-bold truncate">${esc(item.name)}</div>
+                        <div class="text-[11px] cc-muted">${esc(item.meta)}</div>
+                      </div>
+                    </div>
+                    <button data-hub-open="${item.app}" class="px-3 py-1 rounded-lg cc-elevated border text-xs font-bold hover:border-amber-400 flex-shrink-0">
+                      Open
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindHub() {
+        document.querySelectorAll('[data-hub-open]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.activeApp = btn.getAttribute('data-hub-open');
+            renderRail();
+            renderActiveApp();
+          });
+        });
+
+        document.querySelectorAll('[data-load-tpl]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-load-tpl');
+            const tpl = TEMPLATES.find(t => t.id === id);
+            if (!tpl) return;
+            if (tpl.app === 'paint') {
+              state.paint.dataUrl = null; // Triggers Colts poster stencil on mount
+            }
+            state.activeApp = tpl.app;
+            saveWorkspace(false);
+            renderRail();
+            renderActiveApp();
+            toast(`Loaded "${tpl.title}"`);
+          });
+        });
+
+        document.getElementById('hub-backup-btn').addEventListener('click', () => {
+          downloadBlob(JSON.stringify(state, null, 2), 'ColtCreate_Backup.json', 'application/json');
+        });
+
+        document.getElementById('hub-restore-input').addEventListener('change', (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const data = JSON.parse(reader.result);
+              state = { ...state, ...data };
+              saveWorkspace(true);
+              applyTheme();
+              renderRail();
+              renderActiveApp();
+            } catch (err) {
+              toast('Invalid backup file');
+            }
+          };
+          reader.readAsText(file);
+        });
+
+        document.getElementById('hub-reset-demo').addEventListener('click', () => {
+          localStorage.removeItem(STORAGE_KEY);
+          state = JSON.parse(JSON.stringify(defaultState));
+          applyTheme();
+          renderRail();
+          renderActiveApp();
+          toast('Reset all demo files to defaults');
+        });
+      }
+
+      // =========================================================================
+      // 2. COLTWRITER (WORD EQUIVALENT — RICH DOCUMENT PROCESSOR)
+      // =========================================================================
+      function renderWriter() {
+        const w = state.writer;
+        return `
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Document Title & Export Bar -->
+            <div class="cc-surface border-b px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">📄</span>
+                <input id="wr-title" type="text" value="${esc(w.title)}" class="px-2 py-1 rounded-lg cc-elevated border text-xs font-bold focus:outline-none focus:border-amber-400" />
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <button id="wr-export-html" class="px-2.5 py-1 rounded-lg cc-elevated border font-semibold hover:border-amber-400">Export .html</button>
+                <button id="wr-export-txt" class="px-2.5 py-1 rounded-lg cc-elevated border font-semibold hover:border-amber-400">Export .txt</button>
+                <button id="wr-print-pdf" class="px-2.5 py-1 rounded-lg bg-[#0f294a] text-amber-300 font-bold">Print / PDF</button>
+              </div>
+            </div>
+
+            <!-- Formatting Ribbon -->
+            <div class="cc-elevated border-b px-3 py-1.5 flex flex-wrap items-center gap-1 text-xs">
+              <button data-cmd="bold" class="px-2.5 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 font-black">B</button>
+              <button data-cmd="italic" class="px-2.5 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 italic font-serif">I</button>
+              <button data-cmd="underline" class="px-2.5 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 underline">U</button>
+              <span class="opacity-30 mx-1">|</span>
+              <button data-block="H1" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 font-bold">H1</button>
+              <button data-block="H2" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 font-bold">H2</button>
+              <button data-block="P" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800">Body</button>
+              <span class="opacity-30 mx-1">|</span>
+              <button data-cmd="justifyLeft" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800">Left</button>
+              <button data-cmd="justifyCenter" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800">Center</button>
+              <button data-cmd="justifyRight" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800">Right</button>
+              <span class="opacity-30 mx-1">|</span>
+              <button data-cmd="insertUnorderedList" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800">&bull; List</button>
+              <button data-cmd="insertOrderedList" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800">1. List</button>
+              <button id="wr-insert-table" class="px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 font-semibold">+ Table</button>
+              <input id="wr-color" type="color" value="#0f294a" title="Text Color" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent ml-1" />
+            </div>
+
+            <!-- Page Canvas Area -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center">
+              <div
+                id="writer-canvas"
+                contenteditable="true"
+                style="transform: scale(${w.zoom / 100}); transform-origin: top center;"
+                class="w-full max-w-3xl min-h-[760px] bg-white text-slate-900 shadow-xl border border-slate-300 rounded-lg p-6 sm:p-12 select-text"
+              >${w.html}</div>
+            </div>
+
+            <!-- Bottom Status Bar -->
+            <div class="cc-surface border-t px-4 py-1.5 flex items-center justify-between text-[11px] font-mono cc-muted">
+              <div id="wr-stats">0 words &bull; 0 characters &bull; 1 min read</div>
+              <div class="flex items-center gap-2">
+                <span>Zoom:</span>
+                <input id="wr-zoom" type="range" min="75" max="130" value="${w.zoom}" class="w-24 accent-amber-500" />
+                <span id="wr-zoom-val">${w.zoom}%</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function updateWriterStats() {
+        const canvas = document.getElementById('writer-canvas');
+        const stats = document.getElementById('wr-stats');
+        if (!canvas || !stats) return;
+        const text = canvas.innerText.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const chars = text.length;
+        const mins = Math.max(1, Math.ceil(words / 200));
+        stats.textContent = `${words} words • ${chars} characters • ${mins} min read`;
+      }
+
+      function bindWriter() {
+        const canvas = document.getElementById('writer-canvas');
+        updateWriterStats();
+
+        canvas.addEventListener('input', () => {
+          state.writer.html = canvas.innerHTML;
+          updateWriterStats();
+          saveWorkspace(false);
+        });
+
+        document.getElementById('wr-title').addEventListener('input', (e) => {
+          state.writer.title = e.target.value;
+          saveWorkspace(false);
+        });
+
+        document.querySelectorAll('[data-cmd]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.execCommand(btn.getAttribute('data-cmd'), false, null);
+            state.writer.html = canvas.innerHTML;
+            saveWorkspace(false);
+          });
+        });
+
+        document.querySelectorAll('[data-block]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.execCommand('formatBlock', false, btn.getAttribute('data-block'));
+            state.writer.html = canvas.innerHTML;
+            saveWorkspace(false);
+          });
+        });
+
+        document.getElementById('wr-color').addEventListener('input', (e) => {
+          document.execCommand('foreColor', false, e.target.value);
+          state.writer.html = canvas.innerHTML;
+          saveWorkspace(false);
+        });
+
+        document.getElementById('wr-insert-table').addEventListener('click', () => {
+          const tableHtml = `<table><tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr><tr><td>Data A1</td><td>Data B1</td><td>Data C1</td></tr></table><p></p>`;
+          document.execCommand('insertHTML', false, tableHtml);
+          state.writer.html = canvas.innerHTML;
+          saveWorkspace(false);
+        });
+
+        document.getElementById('wr-zoom').addEventListener('input', (e) => {
+          state.writer.zoom = Number(e.target.value);
+          canvas.style.transform = `scale(${state.writer.zoom / 100})`;
+          document.getElementById('wr-zoom-val').textContent = `${state.writer.zoom}%`;
+        });
+
+        document.getElementById('wr-export-html').addEventListener('click', () => {
+          const full = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(state.writer.title)}</title></head><body style="font-family:sans-serif;max-width:800px;margin:2rem auto;line-height:1.6;">${state.writer.html}</body></html>`;
+          downloadBlob(full, state.writer.title.replace(/\.[^.]+$/, '') + '.html', 'text/html');
+        });
+
+        document.getElementById('wr-export-txt').addEventListener('click', () => {
+          downloadBlob(canvas.innerText, state.writer.title.replace(/\.[^.]+$/, '') + '.txt', 'text/plain');
+        });
+
+        document.getElementById('wr-print-pdf').addEventListener('click', () => window.print());
+      }
+
+      // =========================================================================
+      // 3. COLTSLIDES (POWERPOINT EQUIVALENT — PRESENTATION BUILDER)
+      // =========================================================================
+      const SLIDE_THEMES = {
+        muir:     { name: 'Muir Colts Navy & Gold', bg: 'bg-gradient-to-br from-[#091a30] via-[#0f294a] to-[#163d6e] text-white', accent: 'text-[#eab308]', badge: 'bg-[#eab308] text-[#091a30]' },
+        cyber:    { name: 'Midnight Cyber',         bg: 'bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white', accent: 'text-sky-400', badge: 'bg-sky-400 text-slate-950' },
+        academic: { name: 'Clean Academic White',   bg: 'bg-white text-slate-900 border border-slate-300', accent: 'text-[#0f294a]', badge: 'bg-[#0f294a] text-amber-300' },
+        emerald:  { name: 'Emerald Forest',         bg: 'bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-950 text-white', accent: 'text-emerald-300', badge: 'bg-emerald-400 text-slate-950' }
+      };
+
+      function renderSlideStageHtml(slide, themeKey, editable = false) {
+        const t = SLIDE_THEMES[themeKey] || SLIDE_THEMES.muir;
+        const editAttr = editable ? 'contenteditable="true"' : '';
+
+        if (slide.layout === 'title') {
+          return `
+            <div class="w-full h-full ${t.bg} p-8 sm:p-14 flex flex-col justify-center items-center text-center rounded-2xl shadow-2xl relative overflow-hidden">
+              <span class="px-3 py-1 rounded-full ${t.badge} font-mono text-xs font-extrabold mb-4" ${editAttr} data-sfield="callout">${esc(slide.callout)}</span>
+              <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 max-w-3xl" ${editAttr} data-sfield="title">${esc(slide.title)}</h1>
+              <p class="text-sm sm:text-lg opacity-85 max-w-2xl" ${editAttr} data-sfield="subtitle">${esc(slide.subtitle)}</p>
+            </div>
+          `;
+        }
+        if (slide.layout === 'twocol') {
+          return `
+            <div class="w-full h-full ${t.bg} p-6 sm:p-12 flex flex-col justify-between rounded-2xl shadow-2xl">
+              <div class="flex items-center justify-between gap-2 border-b border-current/15 pb-3">
+                <h2 class="text-xl sm:text-3xl font-extrabold ${t.accent}" ${editAttr} data-sfield="title">${esc(slide.title)}</h2>
+                <span class="px-2.5 py-0.5 rounded-full ${t.badge} font-mono text-[11px] font-bold" ${editAttr} data-sfield="callout">${esc(slide.callout)}</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-auto py-4">
+                <div class="p-4 rounded-xl bg-black/15 border border-current/15 text-sm sm:text-base leading-relaxed" ${editAttr} data-sfield="subtitle">${esc(slide.subtitle)}</div>
+                <div class="p-4 rounded-xl bg-black/15 border border-current/15 text-sm sm:text-base leading-relaxed" ${editAttr} data-sfield="colRight">${esc(slide.colRight || 'Click to edit right column...')}</div>
+              </div>
+              <div class="text-[11px] font-mono opacity-60">Muir Middle School (HVS) &bull; ColtSlides</div>
+            </div>
+          `;
+        }
+        if (slide.layout === 'quote') {
+          return `
+            <div class="w-full h-full ${t.bg} p-8 sm:p-14 flex flex-col justify-center items-center text-center rounded-2xl shadow-2xl">
+              <div class="text-3xl sm:text-5xl lg:text-6xl font-black ${t.accent} mb-4" ${editAttr} data-sfield="title">${esc(slide.title)}</div>
+              <p class="text-sm sm:text-xl opacity-90 max-w-2xl mb-6" ${editAttr} data-sfield="subtitle">${esc(slide.subtitle)}</p>
+              <span class="px-3 py-1 rounded-full ${t.badge} font-mono text-xs font-bold" ${editAttr} data-sfield="callout">${esc(slide.callout)}</span>
+            </div>
+          `;
+        }
+        // Default: 'content'
+        return `
+          <div class="w-full h-full ${t.bg} p-6 sm:p-12 flex flex-col justify-between rounded-2xl shadow-2xl">
+            <div class="flex items-center justify-between gap-2 border-b border-current/15 pb-3">
+              <h2 class="text-xl sm:text-3xl font-extrabold ${t.accent}" ${editAttr} data-sfield="title">${esc(slide.title)}</h2>
+              <span class="px-2.5 py-0.5 rounded-full ${t.badge} font-mono text-[11px] font-bold" ${editAttr} data-sfield="callout">${esc(slide.callout)}</span>
+            </div>
+            <div class="my-auto py-4 text-base sm:text-xl leading-relaxed" ${editAttr} data-sfield="subtitle">${esc(slide.subtitle)}</div>
+            <div class="text-[11px] font-mono opacity-60">Muir Middle School (HVS) &bull; ColtSlides</div>
+          </div>
+        `;
+      }
+
+      function renderSlides() {
+        const s = state.slides;
+        const activeSlide = s.items[s.activeIndex] || s.items[0];
+        return `
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Slides Toolbar -->
+            <div class="cc-surface border-b px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button id="sl-add" class="px-2.5 py-1 rounded-lg bg-[#0f294a] text-amber-300 font-bold">+ New Slide</button>
+                <button id="sl-dup" class="px-2.5 py-1 rounded-lg cc-elevated border font-semibold">Duplicate</button>
+                <button id="sl-del" class="px-2.5 py-1 rounded-lg cc-elevated border text-rose-500 font-semibold">Delete</button>
+                <span class="opacity-30">|</span>
+                <select id="sl-layout" class="px-2 py-1 rounded-lg cc-elevated border font-semibold">
+                  <option value="title" ${activeSlide.layout === 'title' ? 'selected' : ''}>Layout: Title Slide</option>
+                  <option value="content" ${activeSlide.layout === 'content' ? 'selected' : ''}>Layout: Title + Content</option>
+                  <option value="twocol" ${activeSlide.layout === 'twocol' ? 'selected' : ''}>Layout: Two Column</option>
+                  <option value="quote" ${activeSlide.layout === 'quote' ? 'selected' : ''}>Layout: Big Number / Quote</option>
+                </select>
+                <select id="sl-theme" class="px-2 py-1 rounded-lg cc-elevated border font-semibold">
+                  ${Object.entries(SLIDE_THEMES).map(([k, val]) => `
+                    <option value="${k}" ${s.theme === k ? 'selected' : ''}>Theme: ${val.name}</option>
+                  `).join('')}
+                </select>
+              </div>
+              <button id="sl-present" class="px-3.5 py-1.5 rounded-lg bg-[#eab308] hover:bg-amber-400 text-[#091a30] font-extrabold">
+                ▶ Present Fullscreen
+              </button>
+            </div>
+
+            <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+              <!-- Slide Thumbnail Sorter -->
+              <aside class="cc-elevated border-b md:border-b-0 md:border-r p-2.5 flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto md:w-56 flex-shrink-0">
+                ${s.items.map((item, idx) => `
+                  <button data-sl-idx="${idx}" class="p-2.5 rounded-xl border text-left transition flex-shrink-0 w-44 md:w-full ${
+                    idx === s.activeIndex ? 'border-amber-500 bg-amber-500/10' : 'cc-surface cc-border hover:border-slate-400'
+                  }">
+                    <div class="text-[10px] font-mono font-bold cc-muted">SLIDE ${idx + 1}</div>
+                    <div class="text-xs font-bold truncate mt-0.5">${esc(item.title)}</div>
+                    <div class="text-[10px] cc-muted truncate">${esc(item.layout)}</div>
+                  </button>
+                `).join('')}
+              </aside>
+
+              <!-- 16:9 Slide Stage -->
+              <div class="flex-1 p-4 sm:p-8 flex items-center justify-center overflow-auto">
+                <div id="sl-stage-box" class="w-full max-w-4xl aspect-video select-text">
+                  ${renderSlideStageHtml(activeSlide, s.theme, true)}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindSlides() {
+        const s = state.slides;
+        const activeSlide = s.items[s.activeIndex];
+
+        document.querySelectorAll('[data-sl-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            s.activeIndex = Number(btn.getAttribute('data-sl-idx'));
+            renderActiveApp();
+          });
+        });
+
+        document.querySelectorAll('[data-sfield]').forEach(el => {
+          el.addEventListener('input', () => {
+            const field = el.getAttribute('data-sfield');
+            activeSlide[field] = el.innerText;
+            saveWorkspace(false);
+          });
+        });
+
+        document.getElementById('sl-add').addEventListener('click', () => {
+          s.items.push({
+            layout: 'content',
+            title: `Slide ${s.items.length + 1} Heading`,
+            subtitle: 'Click any text on this slide to edit your presentation content.',
+            colRight: 'Secondary column details.',
+            callout: 'Muir Colts'
+          });
+          s.activeIndex = s.items.length - 1;
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sl-dup').addEventListener('click', () => {
+          s.items.splice(s.activeIndex + 1, 0, { ...activeSlide });
+          s.activeIndex++;
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sl-del').addEventListener('click', () => {
+          if (s.items.length <= 1) return toast('Cannot delete the only slide');
+          s.items.splice(s.activeIndex, 1);
+          s.activeIndex = Math.max(0, s.activeIndex - 1);
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sl-layout').addEventListener('change', (e) => {
+          activeSlide.layout = e.target.value;
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sl-theme').addEventListener('change', (e) => {
+          s.theme = e.target.value;
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sl-present').addEventListener('click', () => openPresentMode(s.activeIndex));
+      }
+
+      let presentIdx = 0;
+      function openPresentMode(startIdx) {
+        presentIdx = startIdx;
+        document.getElementById('present-overlay').classList.remove('hidden');
+        renderPresentFrame();
+      }
+      function renderPresentFrame() {
+        const s = state.slides;
+        const slide = s.items[presentIdx] || s.items[0];
+        const stage = document.getElementById('present-stage');
+        stage.innerHTML = `<div class="w-full max-w-5xl aspect-video">${renderSlideStageHtml(slide, s.theme, false)}</div>`;
+        document.getElementById('present-counter').textContent = `Slide ${presentIdx + 1} / ${s.items.length}`;
+      }
+
+      // =========================================================================
+      // 4. COLTSHEETS (EXCEL EQUIVALENT — FORMULA SPREADSHEET & CHART)
+      // =========================================================================
+      const COLS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      const ROWS = 16;
+
+      function colToIdx(c) { return COLS.indexOf(c.toUpperCase()); }
+      function parseRef(ref) {
+        const m = /^([A-H])(\d+)$/i.exec(ref.trim());
+        if (!m) return null;
+        return { col: colToIdx(m[1]), row: Number(m[2]) };
+      }
+
+      function evalCell(cellId, visited = new Set()) {
+        if (visited.has(cellId)) return '#REF!';
+        visited.add(cellId);
+        const cell = state.sheets.cells[cellId];
+        if (!cell || cell.raw === '') return '';
+        const raw = String(cell.raw).trim();
+        if (!raw.startsWith('=')) return raw;
+
+        const expr = raw.slice(1).trim();
+        try {
+          // Range functions: SUM, AVERAGE, MIN, MAX, COUNT
+          const fnMatch = /^(SUM|AVERAGE|MIN|MAX|COUNT)\(([A-H]\d+):([A-H]\d+)\)$/i.exec(expr);
+          if (fnMatch) {
+            const fn = fnMatch[1].toUpperCase();
+            const p1 = parseRef(fnMatch[2]);
+            const p2 = parseRef(fnMatch[3]);
+            if (!p1 || !p2) return '#ERR';
+            const nums = [];
+            for (let r = Math.min(p1.row, p2.row); r <= Math.max(p1.row, p2.row); r++) {
+              for (let c = Math.min(p1.col, p2.col); c <= Math.max(p1.col, p2.col); c++) {
+                const v = Number(evalCell(`${COLS[c]}${r}`, new Set(visited)));
+                if (!isNaN(v) && evalCell(`${COLS[c]}${r}`) !== '') nums.push(v);
+              }
+            }
+            if (fn === 'COUNT') return nums.length;
+            if (nums.length === 0) return 0;
+            const sum = nums.reduce((a, b) => a + b, 0);
+            if (fn === 'SUM') return Math.round(sum * 100) / 100;
+            if (fn === 'AVERAGE') return Math.round((sum / nums.length) * 100) / 100;
+            if (fn === 'MIN') return Math.min(...nums);
+            if (fn === 'MAX') return Math.max(...nums);
+          }
+
+          // Arithmetic with cell references (e.g., =C2+D2 or =B2*10)
+          const substituted = expr.replace(/\b([A-H]\d+)\b/gi, (_, ref) => {
+            const val = Number(evalCell(ref.toUpperCase(), new Set(visited)));
+            return isNaN(val) ? 0 : val;
+          });
+          if (/[^0-9+\-*/().\s]/.test(substituted)) return '#ERR';
+          const result = Function(`"use strict"; return (${substituted})`)();
+          return typeof result === 'number' && isFinite(result) ? Math.round(result * 100) / 100 : '#ERR';
+        } catch (e) {
+          return '#ERR';
+        }
+      }
+
+      function renderSheets() {
+        const sh = state.sheets;
+        const sel = sh.selectedCell;
+        const selObj = sh.cells[sel] || { raw: '', bold: false, fmt: 'num' };
+
+        // Gather chart bars from rows 2..6 using Col A labels and chartCol values
+        const chartBars = [];
+        for (let r = 2; r <= 6; r++) {
+          const label = evalCell(`A${r}`);
+          const val = Number(evalCell(`${sh.chartCol}${r}`));
+          if (label && !isNaN(val) && val > 0) {
+            chartBars.push({ label: String(label), val });
+          }
+        }
+        const maxBar = Math.max(100, ...chartBars.map(b => b.val));
+
+        return `
+          <div class="flex-1 flex flex-col overflow-hidden text-xs">
+            <!-- Formula Bar & Formatting Ribbon -->
+            <div class="cc-surface border-b px-3 py-2 flex flex-wrap items-center gap-2">
+              <span class="px-2 py-1 rounded bg-[#0f294a] text-amber-300 font-mono font-bold">${sel}</span>
+              <span class="font-mono font-bold cc-muted">fx</span>
+              <input id="sh-formula-input" type="text" value="${esc(selObj.raw)}" placeholder="Value or formula (=SUM(C2:C5), =C2+D2)..." class="flex-1 min-w-[180px] px-2.5 py-1 rounded-lg cc-elevated border font-mono focus:outline-none focus:border-amber-400" />
+              <button id="sh-bold-btn" class="px-2.5 py-1 rounded-lg cc-elevated border font-black ${selObj.bold ? 'border-amber-400 text-amber-500' : ''}">B</button>
+              <button id="sh-autosum-btn" class="px-2.5 py-1 rounded-lg cc-elevated border font-mono font-bold">&Sigma; AutoSum</button>
+              <button id="sh-export-csv" class="px-2.5 py-1 rounded-lg bg-[#0f294a] text-amber-300 font-bold">Export .csv</button>
+            </div>
+
+            <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+              <!-- Spreadsheet Grid -->
+              <div class="flex-1 overflow-auto">
+                <table class="w-full border-collapse font-mono text-xs">
+                  <thead>
+                    <tr class="cc-elevated">
+                      <th class="w-10 border cc-border p-1.5 cc-muted">#</th>
+                      ${COLS.map(c => `<th class="min-w-[95px] border cc-border p-1.5 font-bold">${c}</th>`).join('')}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${Array.from({ length: ROWS }, (_, ri) => {
+                      const r = ri + 1;
+                      return `
+                        <tr>
+                          <td class="border cc-border p-1 text-center cc-elevated cc-muted font-bold">${r}</td>
+                          ${COLS.map(c => {
+                            const id = `${c}${r}`;
+                            const cell = sh.cells[id] || { raw: '', bold: false };
+                            const disp = evalCell(id);
+                            const isSel = sel === id;
+                            return `
+                              <td
+                                data-cell="${id}"
+                                class="border cc-border px-2 py-1.5 cursor-cell truncate max-w-[130px] ${
+                                  isSel ? 'ring-2 ring-amber-400 bg-amber-500/10' : 'cc-surface'
+                                } ${cell.bold ? 'font-bold' : ''}"
+                              >${esc(disp)}</td>
+                            `;
+                          }).join('')}
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Live Chart Visualizer Panel -->
+              <aside class="cc-elevated border-t lg:border-t-0 lg:border-l p-4 lg:w-72 flex-shrink-0 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold">Live Column Chart</span>
+                  <select id="sh-chart-col" class="px-2 py-0.5 rounded cc-surface border font-mono text-[11px]">
+                    ${['B', 'C', 'D', 'E'].map(c => `<option value="${c}" ${sh.chartCol === c ? 'selected' : ''}>Col ${c}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="space-y-2.5 pt-1">
+                  ${chartBars.length ? chartBars.map(b => `
+                    <div>
+                      <div class="flex justify-between text-[11px] font-mono mb-0.5">
+                        <span class="truncate font-semibold">${esc(b.label)}</span>
+                        <span class="font-bold text-amber-500">${b.val}</span>
+                      </div>
+                      <div class="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                        <div class="h-full bg-[#0f294a] dark:bg-[#eab308] rounded-full transition-all" style="width: ${Math.min(100, (b.val / maxBar) * 100)}%"></div>
+                      </div>
+                    </div>
+                  `).join('') : `<div class="text-[11px] cc-muted">Enter numbers in rows 2–6 to visualize.</div>`}
+                </div>
+                <div class="text-[11px] cc-muted border-t cc-border pt-2 font-mono">
+                  Supports =SUM(), =AVERAGE(), =MIN(), =MAX(), =COUNT(), and math expressions.
+                </div>
+              </aside>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindSheets() {
+        const sh = state.sheets;
+        const fInput = document.getElementById('sh-formula-input');
+
+        document.querySelectorAll('[data-cell]').forEach(td => {
+          td.addEventListener('click', () => {
+            sh.selectedCell = td.getAttribute('data-cell');
+            renderActiveApp();
+            setTimeout(() => document.getElementById('sh-formula-input')?.focus(), 10);
+          });
+        });
+
+        fInput.addEventListener('input', (e) => {
+          const prev = sh.cells[sh.selectedCell] || { bold: false, fmt: 'num' };
+          sh.cells[sh.selectedCell] = { ...prev, raw: e.target.value };
+          saveWorkspace(false);
+        });
+
+        fInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            renderActiveApp();
+          }
+        });
+
+        document.getElementById('sh-bold-btn').addEventListener('click', () => {
+          const prev = sh.cells[sh.selectedCell] || { raw: '', bold: false, fmt: 'num' };
+          sh.cells[sh.selectedCell] = { ...prev, bold: !prev.bold };
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sh-autosum-btn').addEventListener('click', () => {
+          const m = /^([A-H])(\d+)$/.exec(sh.selectedCell);
+          if (!m || Number(m[2]) <= 2) return;
+          const col = m[1];
+          const endRow = Number(m[2]) - 1;
+          sh.cells[sh.selectedCell] = { raw: `=SUM(${col}2:${col}${endRow})`, bold: true, fmt: 'num' };
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('sh-chart-col').addEventListener('change', (e) => {
+          sh.chartCol = e.target.value;
+          renderActiveApp();
+        });
+
+        document.getElementById('sh-export-csv').addEventListener('click', () => {
+          const lines = [];
+          for (let r = 1; r <= ROWS; r++) {
+            lines.push(COLS.map(c => `"${String(evalCell(`${c}${r}`)).replace(/"/g, '""')}"`).join(','));
+          }
+          downloadBlob(lines.join('\n'), 'ColtSheets_Export.csv', 'text/csv');
+        });
+      }
+
+      // =========================================================================
+      // 5. COLTSTUDIO (CLIPCHAMP EQUIVALENT — TIMELINE VIDEO & MOTION EDITOR)
+      // =========================================================================
+      let studioInterval = null;
+      let audioCtx = null;
+
+      function stopStudioPlayback() {
+        if (studioInterval) clearInterval(studioInterval);
+        studioInterval = null;
+        state.studio.playing = false;
+      }
+
+      function playSynthChime(step) {
+        if (!state.studio.audioEnabled) return;
+        try {
+          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const notes = [261.63, 329.63, 392.0, 523.25];
+          osc.type = 'triangle';
+          osc.frequency.value = notes[step % notes.length];
+          gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.19);
+        } catch (e) {}
+      }
+
+      function drawStudioFrame() {
+        const canvas = document.getElementById('studio-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const st = state.studio;
+        const total = st.clips.length || 1;
+        const exactPos = (st.playhead / 100) * total;
+        const clipIdx = Math.min(total - 1, Math.floor(exactPos));
+        const localProgress = exactPos - clipIdx;
+        const clip = st.clips[clipIdx];
+
+        // Background fill
+        ctx.fillStyle = clip.bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Decorative accent bars
+        ctx.fillStyle = clip.accent;
+        ctx.fillRect(0, 0, canvas.width, 8);
+        ctx.fillRect(0, canvas.height - 8, canvas.width, 8);
+
+        // Kinetic slide-in animation
+        const slideOffset = Math.max(0, (1 - Math.min(1, localProgress * 3)) * 40);
+
+        // Sticker Emoji
+        ctx.font = '48px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(clip.sticker, canvas.width / 2, 95 + slideOffset * 0.5);
+
+        // Headline
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 28px Inter, sans-serif';
+        ctx.fillText(clip.headline, canvas.width / 2, 155 + slideOffset);
+
+        // Subtitle
+        ctx.fillStyle = clip.accent;
+        ctx.font = '600 15px Inter, sans-serif';
+        ctx.fillText(clip.sub, canvas.width / 2, 188 + slideOffset);
+
+        // Watermark
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.font = '11px monospace';
+        ctx.fillText(`ColtStudio • Scene ${clipIdx + 1}/${total} • ${Math.round(st.playhead)}%`, canvas.width / 2, canvas.height - 20);
+      }
+
+      function renderStudio() {
+        const st = state.studio;
+        const activeClip = st.clips[st.activeClip] || st.clips[0];
+        return `
+          <div class="flex-1 flex flex-col overflow-hidden text-xs">
+            <!-- Studio Toolbar -->
+            <div class="cc-surface border-b px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <button id="st-play-btn" class="px-3.5 py-1.5 rounded-lg bg-[#eab308] text-[#091a30] font-extrabold">
+                  ${st.playing ? '⏸ Pause' : '▶ Play Preview'}
+                </button>
+                <button id="st-add-clip" class="px-2.5 py-1.5 rounded-lg bg-[#0f294a] text-amber-300 font-bold">+ Add Scene</button>
+                <label class="flex items-center gap-1.5 ml-2 cursor-pointer font-semibold">
+                  <input id="st-audio-cb" type="checkbox" ${st.audioEnabled ? 'checked' : ''} class="accent-amber-500" />
+                  <span>Synth Audio Track</span>
+                </label>
+              </div>
+              <button id="st-snap-png" class="px-3 py-1.5 rounded-lg cc-elevated border font-bold hover:border-amber-400">
+                Export Frame (.png)
+              </button>
+            </div>
+
+            <!-- Stage + Clip Inspector -->
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+              <div class="lg:col-span-2 p-4 flex flex-col items-center justify-center bg-slate-950 gap-3">
+                <canvas id="studio-canvas" width="560" height="280" class="w-full max-w-xl rounded-xl border border-white/15 shadow-2xl"></canvas>
+                <div class="w-full max-w-xl flex items-center gap-3 text-white font-mono text-[11px]">
+                  <span>0:00</span>
+                  <input id="st-scrubber" type="range" min="0" max="99" value="${st.playhead}" class="flex-1 accent-amber-400 cursor-pointer" />
+                  <span>0:0${st.clips.length * 3}</span>
+                </div>
+              </div>
+
+              <!-- Scene Clip Properties -->
+              <aside class="cc-surface border-t lg:border-t-0 lg:border-l p-4 overflow-y-auto space-y-3">
+                <div class="font-bold uppercase text-[11px] cc-muted">Selected Scene Properties</div>
+                <div>
+                  <label class="block text-[11px] font-semibold mb-1">Headline Overlay</label>
+                  <input id="st-headline" type="text" value="${esc(activeClip.headline)}" class="w-full px-2.5 py-1.5 rounded-lg cc-elevated border font-bold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold mb-1">Subtitle Caption</label>
+                  <input id="st-sub" type="text" value="${esc(activeClip.sub)}" class="w-full px-2.5 py-1.5 rounded-lg cc-elevated border" />
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[11px] font-semibold mb-1">Background</label>
+                    <input id="st-bg" type="color" value="${activeClip.bg}" class="w-full h-8 rounded cursor-pointer" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold mb-1">Sticker Badge</label>
+                    <input id="st-sticker" type="text" value="${esc(activeClip.sticker)}" class="w-full px-2 py-1 rounded-lg cc-elevated border text-center" />
+                  </div>
+                </div>
+              </aside>
+            </div>
+
+            <!-- Multi-Track Timeline -->
+            <div class="cc-elevated border-t p-3 space-y-2 flex-shrink-0">
+              <div class="text-[10px] font-mono font-bold uppercase cc-muted">Multi-Track Timeline (Video Scenes + Kinetic Text + Audio)</div>
+              <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                ${st.clips.map((c, idx) => `
+                  <button data-st-clip="${idx}" class="px-3 py-2 rounded-xl border text-left min-w-[150px] transition ${
+                    idx === st.activeClip ? 'border-amber-500 bg-amber-500/15 font-bold' : 'cc-surface cc-border'
+                  }">
+                    <div class="text-[10px] font-mono cc-muted">TRACK V1 &bull; 3.0s</div>
+                    <div class="truncate">${c.sticker} ${esc(c.headline)}</div>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindStudio() {
+        drawStudioFrame();
+        const st = state.studio;
+        const activeClip = st.clips[st.activeClip];
+
+        document.getElementById('st-play-btn').addEventListener('click', () => {
+          if (st.playing) {
+            stopStudioPlayback();
+            renderActiveApp();
+            return;
+          }
+          st.playing = true;
+          renderActiveApp();
+          let tick = 0;
+          studioInterval = setInterval(() => {
+            st.playhead = (st.playhead + 2) % 100;
+            const scrub = document.getElementById('st-scrubber');
+            if (scrub) scrub.value = st.playhead;
+            drawStudioFrame();
+            if (tick % 8 === 0) playSynthChime(tick / 8);
+            tick++;
+          }, 90);
+        });
+
+        document.getElementById('st-scrubber').addEventListener('input', (e) => {
+          st.playhead = Number(e.target.value);
+          st.activeClip = Math.min(st.clips.length - 1, Math.floor((st.playhead / 100) * st.clips.length));
+          drawStudioFrame();
+        });
+
+        document.querySelectorAll('[data-st-clip]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            st.activeClip = Number(btn.getAttribute('data-st-clip'));
+            st.playhead = Math.round((st.activeClip / st.clips.length) * 100);
+            renderActiveApp();
+          });
+        });
+
+        document.getElementById('st-add-clip').addEventListener('click', () => {
+          st.clips.push({
+            id: 'c' + Date.now(),
+            label: 'New Scene',
+            bg: '#0f294a',
+            accent: '#eab308',
+            headline: 'NEW ANNOUNCEMENT',
+            sub: 'Edit scene headline & sticker on the right',
+            sticker: '⭐',
+            duration: 3
+          });
+          st.activeClip = st.clips.length - 1;
+          saveWorkspace(false);
+          renderActiveApp();
+        });
+
+        document.getElementById('st-audio-cb').addEventListener('change', (e) => {
+          st.audioEnabled = e.target.checked;
+          saveWorkspace(false);
+        });
+
+        ['st-headline', 'st-sub', 'st-bg', 'st-sticker'].forEach(id => {
+          document.getElementById(id).addEventListener('input', (e) => {
+            if (id === 'st-headline') activeClip.headline = e.target.value;
+            if (id === 'st-sub') activeClip.sub = e.target.value;
+            if (id === 'st-bg') activeClip.bg = e.target.value;
+            if (id === 'st-sticker') activeClip.sticker = e.target.value;
+            saveWorkspace(false);
+            drawStudioFrame();
+          });
+        });
+
+        document.getElementById('st-snap-png').addEventListener('click', () => {
+          const canvas = document.getElementById('studio-canvas');
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          a.download = 'ColtStudio_Frame.png';
+          a.click();
+          toast('Exported video snapshot PNG');
+        });
+      }
+
+      // =========================================================================
+      // 6. COLTPAINT (MS PAINT / DESIGNER EQUIVALENT — RASTER & VECTOR STUDIO)
+      // =========================================================================
+      let paintHistory = [];
+      let paintRedo = [];
+
+      function renderPaint() {
+        const p = state.paint;
+        const swatches = ['#0f294a', '#eab308', '#000000', '#ffffff', '#ef4444', '#3b82f6', '#10b981', '#a855f7'];
+        return `
+          <div class="flex-1 flex flex-col overflow-hidden text-xs">
+            <!-- Paint Ribbon -->
+            <div class="cc-surface border-b px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-1">
+                ${[
+                  { id: 'brush', label: '🖌️ Brush' },
+                  { id: 'eraser', label: '🧽 Eraser' },
+                  { id: 'line', label: '📏 Line' },
+                  { id: 'rect', label: '⬜ Rect' },
+                  { id: 'circle', label: '⭕ Circle' },
+                  { id: 'text', label: '🔤 Stamp' }
+                ].map(t => `
+                  <button data-pt-tool="${t.id}" class="px-2.5 py-1 rounded-lg border font-bold ${
+                    p.tool === t.id ? 'bg-[#eab308] text-[#091a30] border-amber-500' : 'cc-elevated cc-border'
+                  }">${t.label}</button>
+                `).join('')}
+              </div>
+
+              <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1">
+                  ${swatches.map(hex => `
+                    <button data-pt-color="${hex}" class="w-5 h-5 rounded-full border border-slate-400 ${p.color === hex ? 'ring-2 ring-amber-400 scale-110' : ''}" style="background:${hex}"></button>
+                  `).join('')}
+                  <input id="pt-color-picker" type="color" value="${p.color}" class="w-6 h-6 rounded cursor-pointer ml-1" />
+                </div>
+                <input id="pt-size" type="range" min="2" max="28" value="${p.size}" class="w-20 accent-amber-500" />
+                <button id="pt-undo" class="px-2 py-1 rounded cc-elevated border font-semibold">Undo</button>
+                <button id="pt-clear" class="px-2 py-1 rounded cc-elevated border text-rose-500 font-semibold">Clear</button>
+                <button id="pt-download" class="px-3 py-1 rounded bg-[#0f294a] text-amber-300 font-bold">Save .png</button>
+              </div>
+            </div>
+
+            <!-- Drawing Canvas Container -->
+            <div class="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-200 dark:bg-slate-900">
+              <canvas id="paint-canvas" width="820" height="460" class="bg-white rounded-xl shadow-xl border border-slate-400 cursor-crosshair max-w-full"></canvas>
+            </div>
+          </div>
+        `;
+      }
+
+      function drawPosterBase(ctx, w, h) {
+        ctx.fillStyle = '#0f294a';
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = '#eab308';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(18, 18, w - 36, h - 36);
+        ctx.fillStyle = '#eab308';
+        ctx.font = '900 34px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('GO MUIR COLTS!', w / 2, 85);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '600 16px Inter, sans-serif';
+        ctx.fillText('Draw your school spirit poster below using ColtPaint', w / 2, 120);
+      }
+
+      function bindPaint() {
+        const canvas = document.getElementById('paint-canvas');
+        const ctx = canvas.getContext('2d');
+        const p = state.paint;
+
+        if (p.dataUrl) {
+          const img = new Image();
+          img.onload = () => ctx.drawImage(img, 0, 0);
+          img.src = p.dataUrl;
+        } else {
+          drawPosterBase(ctx, canvas.width, canvas.height);
+          p.dataUrl = canvas.toDataURL();
+        }
+
+        function pushHistory() {
+          paintHistory.push(canvas.toDataURL());
+          if (paintHistory.length > 20) paintHistory.shift();
+          paintRedo = [];
+        }
+
+        let drawing = false;
+        let startX = 0;
+        let startY = 0;
+        let snapshot = null;
+
+        function getPos(e) {
+          const rect = canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            x: ((clientX - rect.left) / rect.width) * canvas.width,
+            y: ((clientY - rect.top) / rect.height) * canvas.height
+          };
+        }
+
+        function onDown(e) {
+          e.preventDefault();
+          pushHistory();
+          const pos = getPos(e);
+          startX = pos.x;
+          startY = pos.y;
+
+          if (p.tool === 'text') {
+            ctx.fillStyle = p.color;
+            ctx.font = `900 ${Math.max(18, p.size * 3)}px Inter, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.fillText('★ COLTS ★', startX, startY);
+            p.dataUrl = canvas.toDataURL();
+            saveWorkspace(false);
+            return;
+          }
+
+          drawing = true;
+          snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = p.size;
+          ctx.strokeStyle = p.tool === 'eraser' ? '#ffffff' : p.color;
+        }
+
+        function onMove(e) {
+          if (!drawing) return;
+          e.preventDefault();
+          const pos = getPos(e);
+          if (p.tool === 'brush' || p.tool === 'eraser') {
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+          } else {
+            ctx.putImageData(snapshot, 0, 0);
+            ctx.beginPath();
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = p.size;
+            if (p.tool === 'line') {
+              ctx.moveTo(startX, startY);
+              ctx.lineTo(pos.x, pos.y);
+            } else if (p.tool === 'rect') {
+              ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
+            } else if (p.tool === 'circle') {
+              const r = Math.hypot(pos.x - startX, pos.y - startY);
+              ctx.arc(startX, startY, r, 0, Math.PI * 2);
+            }
+            ctx.stroke();
+          }
+        }
+
+        function onUp() {
+          if (!drawing) return;
+          drawing = false;
+          p.dataUrl = canvas.toDataURL();
+          saveWorkspace(false);
+        }
+
+        canvas.addEventListener('mousedown', onDown);
+        canvas.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        canvas.addEventListener('touchstart', onDown, { passive: false });
+        canvas.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+
+        document.querySelectorAll('[data-pt-tool]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            p.tool = btn.getAttribute('data-pt-tool');
+            renderActiveApp();
+          });
+        });
+
+        document.querySelectorAll('[data-pt-color]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            p.color = btn.getAttribute('data-pt-color');
+            renderActiveApp();
+          });
+        });
+
+        document.getElementById('pt-color-picker').addEventListener('input', (e) => {
+          p.color = e.target.value;
+        });
+
+        document.getElementById('pt-size').addEventListener('input', (e) => {
+          p.size = Number(e.target.value);
+        });
+
+        document.getElementById('pt-undo').addEventListener('click', () => {
+          if (!paintHistory.length) return;
+          const prev = paintHistory.pop();
+          const img = new Image();
+          img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            p.dataUrl = canvas.toDataURL();
+            saveWorkspace(false);
+          };
+          img.src = prev;
+        });
+
+        document.getElementById('pt-clear').addEventListener('click', () => {
+          pushHistory();
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          p.dataUrl = canvas.toDataURL();
+          saveWorkspace(false);
+        });
+
+        document.getElementById('pt-download').addEventListener('click', () => {
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          a.download = 'ColtPaint_Artwork.png';
+          a.click();
+          toast('Downloaded ColtPaint_Artwork.png');
+        });
+      }
+
+      // =========================================================================
+      // 7. COLTFORMS & COLTNOTES (FORMS + STICKY NOTES MICRO-SUITE)
+      // =========================================================================
+      function renderFormsAndNotes() {
+        const f = state.forms;
+        return `
+          <div class="flex-1 flex flex-col overflow-hidden text-xs">
+            <!-- Sub-Tab Header -->
+            <div class="cc-surface border-b px-4 py-2 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <button data-fn-tab="forms" class="px-3 py-1.5 rounded-lg font-bold ${f.subTab === 'forms' ? 'bg-[#0f294a] text-amber-300' : 'cc-elevated border'}">
+                  📋 ColtForms (Quizzes &amp; Polls)
+                </button>
+                <button data-fn-tab="notes" class="px-3 py-1.5 rounded-lg font-bold ${f.subTab === 'notes' ? 'bg-[#0f294a] text-amber-300' : 'cc-elevated border'}">
+                  🗒️ ColtNotes (Sticky Board)
+                </button>
+              </div>
+              ${f.subTab === 'notes' ? `<button id="fn-add-sticky" class="px-3 py-1.5 rounded-lg bg-[#eab308] text-[#091a30] font-extrabold">+ Add Sticky Note</button>` : ''}
+            </div>
+
+            ${f.subTab === 'forms' ? `
+              <div class="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Live Form Preview & Submission -->
+                <form id="cf-submit-form" class="cc-surface border rounded-2xl p-5 space-y-4 shadow-sm">
+                  <div class="border-t-8 border-[#0f294a] -mx-5 -mt-5 px-5 pt-4 pb-3 border-b cc-border">
+                    <input id="cf-title-inp" type="text" value="${esc(f.formTitle)}" class="w-full text-base font-extrabold bg-transparent focus:outline-none" />
+                    <div class="text-[11px] cc-muted mt-0.5">Muir Middle School (HVS) &bull; Submit a response below</div>
+                  </div>
+                  ${f.questions.map(q => `
+                    <div class="space-y-1.5">
+                      <div class="font-bold">${esc(q.prompt)}</div>
+                      <div class="space-y-1">
+                        ${q.options.map((opt, idx) => `
+                          <label class="flex items-center gap-2 p-2 rounded-lg cc-elevated border cursor-pointer hover:border-amber-400">
+                            <input type="radio" name="${q.id}" value="${esc(opt)}" ${idx === 0 ? 'checked' : ''} class="accent-amber-500" />
+                            <span>${esc(opt)}</span>
+                          </label>
+                        `).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                  <button type="submit" class="w-full py-2.5 rounded-xl bg-[#0f294a] hover:bg-[#173c6b] text-amber-300 font-extrabold">
+                    Submit Response
+                  </button>
+                </form>
+
+                <!-- Instant Analytics Results -->
+                <div class="cc-surface border rounded-2xl p-5 space-y-4">
+                  <div class="flex items-center justify-between border-b cc-border pb-2.5">
+                    <span class="font-extrabold text-sm">Live Response Summary</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                      ${f.responses.length} Responses
+                    </span>
+                  </div>
+                  ${f.questions.map(q => {
+                    const total = Math.max(1, f.responses.length);
+                    return `
+                      <div class="space-y-1.5">
+                        <div class="font-bold text-xs">${esc(q.prompt)}</div>
+                        ${q.options.map(opt => {
+                          const count = f.responses.filter(r => r[q.id] === opt).length;
+                          const pct = Math.round((count / total) * 100);
+                          return `
+                            <div>
+                              <div class="flex justify-between text-[11px] font-mono mb-0.5">
+                                <span>${esc(opt)}</span>
+                                <span>${count} (${pct}%)</span>
+                              </div>
+                              <div class="w-full h-2.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                                <div class="h-full bg-[#eab308]" style="width: ${pct}%"></div>
+                              </div>
+                            </div>
+                          `;
+                        }).join('')}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            ` : `
+              <!-- Sticky Notes Grid -->
+              <div class="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 content-start">
+                ${f.stickies.map((st, idx) => `
+                  <div class="${st.color} rounded-2xl p-4 shadow-md flex flex-col justify-between gap-2 min-h-[170px]">
+                    <div class="flex items-center justify-between gap-2 border-b border-black/10 pb-1.5">
+                      <input data-st-title="${idx}" type="text" value="${esc(st.title)}" class="font-extrabold text-sm bg-transparent focus:outline-none w-full" />
+                      <button data-st-del="${idx}" class="font-bold opacity-60 hover:opacity-100">&times;</button>
+                    </div>
+                    <textarea data-st-body="${idx}" class="flex-1 bg-transparent text-xs leading-relaxed resize-none focus:outline-none">${esc(st.body)}</textarea>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      function bindFormsAndNotes() {
+        const f = state.forms;
+        document.querySelectorAll('[data-fn-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            f.subTab = btn.getAttribute('data-fn-tab');
+            renderActiveApp();
+          });
+        });
+
+        const form = document.getElementById('cf-submit-form');
+        if (form) {
+          document.getElementById('cf-title-inp').addEventListener('input', (e) => {
+            f.formTitle = e.target.value;
+            saveWorkspace(false);
+          });
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fd = new FormData(form);
+            const entry = {};
+            f.questions.forEach(q => { entry[q.id] = fd.get(q.id) || q.options[0]; });
+            f.responses.push(entry);
+            saveWorkspace(false);
+            renderActiveApp();
+            toast('Form response recorded!');
+          });
+        }
+
+        const addStickyBtn = document.getElementById('fn-add-sticky');
+        if (addStickyBtn) {
+          addStickyBtn.addEventListener('click', () => {
+            const colors = ['bg-amber-200 text-slate-900', 'bg-sky-200 text-slate-900', 'bg-emerald-200 text-slate-900', 'bg-pink-200 text-slate-900'];
+            f.stickies.unshift({
+              id: 's' + Date.now(),
+              color: colors[f.stickies.length % colors.length],
+              title: 'Quick Class Note',
+              body: 'Type your Muir Middle School study reminder here...'
+            });
+            saveWorkspace(false);
+            renderActiveApp();
+          });
+        }
+
+        document.querySelectorAll('[data-st-title]').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            f.stickies[Number(inp.getAttribute('data-st-title'))].title = e.target.value;
+            saveWorkspace(false);
+          });
+        });
+        document.querySelectorAll('[data-st-body]').forEach(ta => {
+          ta.addEventListener('input', (e) => {
+            f.stickies[Number(ta.getAttribute('data-st-body'))].body = e.target.value;
+            saveWorkspace(false);
+          });
+        });
+        document.querySelectorAll('[data-st-del]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            f.stickies.splice(Number(btn.getAttribute('data-st-del')), 1);
+            saveWorkspace(false);
+            renderActiveApp();
+          });
+        });
+      }
+
+      // --- Render Active App Router ---
+      function renderActiveApp() {
+        const vp = document.getElementById('app-viewport');
+        const app = state.activeApp;
+        if (app === 'hub') { vp.innerHTML = renderHub(); bindHub(); }
+        else if (app === 'writer') { vp.innerHTML = renderWriter(); bindWriter(); }
+        else if (app === 'slides') { vp.innerHTML = renderSlides(); bindSlides(); }
+        else if (app === 'sheets') { vp.innerHTML = renderSheets(); bindSheets(); }
+        else if (app === 'studio') { vp.innerHTML = renderStudio(); bindStudio(); }
+        else if (app === 'paint')  { vp.innerHTML = renderPaint();  bindPaint(); }
+        else if (app === 'forms')  { vp.innerHTML = renderFormsAndNotes(); bindFormsAndNotes(); }
+      }
+
+      // --- Global Header & Presentation Controls ---
+      function bindGlobal() {
+        document.getElementById('btn-dark-toggle').addEventListener('click', () => {
+          state.darkMode = !state.darkMode;
+          applyTheme();
+          saveWorkspace(false);
+        });
+
+        document.getElementById('btn-quick-save').addEventListener('click', () => saveWorkspace(true));
+
+        document.getElementById('present-prev').addEventListener('click', () => {
+          presentIdx = Math.max(0, presentIdx - 1);
+          renderPresentFrame();
+        });
+        document.getElementById('present-next').addEventListener('click', () => {
+          presentIdx = Math.min(state.slides.items.length - 1, presentIdx + 1);
+          renderPresentFrame();
+        });
+        document.getElementById('present-exit').addEventListener('click', () => {
+          document.getElementById('present-overlay').classList.add('hidden');
+        });
+
+        window.addEventListener('keydown', (e) => {
+          const overlay = document.getElementById('present-overlay');
+          if (overlay.classList.contains('hidden')) return;
+          if (e.key === 'Escape') overlay.classList.add('hidden');
+          if (e.key === 'ArrowRight' || e.key === ' ') {
+            presentIdx = Math.min(state.slides.items.length - 1, presentIdx + 1);
+            renderPresentFrame();
+          }
+          if (e.key === 'ArrowLeft') {
+            presentIdx = Math.max(0, presentIdx - 1);
+            renderPresentFrame();
+          }
+        });
+      }
+
+      // --- Boot ColtCreate ---
+      loadWorkspace();
+      applyTheme();
+      bindGlobal();
+      renderRail();
+      renderActiveApp();
+    })();
+  </script>
+</body>
+</html>
